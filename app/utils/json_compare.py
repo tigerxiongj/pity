@@ -6,12 +6,12 @@ from app.utils.decorator import SingletonDecorator
 @SingletonDecorator
 class JsonCompare(object):
 
-    def compare(self, exp, act):
+    def compare(self, exp, act, match = False):
         ans = []
-        self._compare(exp, act, ans, '$')
+        self._compare(exp, act, ans, '$', match)
         return ans
 
-    def _compare(self, a, b, ans, path):
+    def _compare(self, a, b, ans, path, match = False):
         a = self._to_json(a)
         b = self._to_json(b)
         if type(a) != type(b):
@@ -26,10 +26,11 @@ class JsonCompare(object):
                     keys.append(key)
                 else:
                     ans.append(f"{pt} 在实际结果中不存在【❌】")
-            for key in b.keys():
-                if key not in keys:
-                    pt = path + "." + key
-                    ans.append(f"{pt} 在实际结果中多出【❌】")
+            if not match:
+                for key in b.keys():
+                    if key not in keys:
+                        pt = path + "." + key
+                        ans.append(f"{pt} 在实际结果中多出【❌】")
         elif isinstance(a, list):
             i = j = 0
             while i < len(a):
@@ -42,10 +43,11 @@ class JsonCompare(object):
                 self._compare(a[i], b[j], ans, pt)
                 i += 1
                 j += 1
-            while j < len(b):
-                pt = f"{path}[{j}]"
-                ans.append(f"{pt} 在预期结果中不存在【❌】")
-                j += 1
+            if not match:
+                while j < len(b):
+                    pt = f"{path}[{j}]"
+                    ans.append(f"{pt} 在预期结果中不存在【❌】")
+                    j += 1
         else:
             if a != b:
                 ans.append(

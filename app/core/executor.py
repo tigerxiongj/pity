@@ -364,6 +364,11 @@ class Executor(object):
             # Step11: 断言
             asserts, ok = self.my_assert(asserts, response_info.get('json_format'))
             response_info["status"] = ok
+
+            # 如果返回码为400， 404， 500，将结果设置为false
+            if (response_info["status_code"] in (400, 404, 500)):
+                response_info["status"] = False
+
             response_info["asserts"] = asserts
             # 日志输出, 如果不是主用例则不记录
             if self._main:
@@ -505,6 +510,9 @@ class Executor(object):
                 actually = self.translate(item.actually)
                 status, err = self.ops(item.assert_type, expected, actually)
                 result[item.id] = {"status": status, "msg": err}
+                # 如果任何一个断言失败，结果为失败
+                if status is False:
+                    ok = False
             except Exception as e:
                 if ok is True:
                     ok = False
@@ -565,6 +573,11 @@ class Executor(object):
             data = JsonCompare().compare(exp, act)
             if len(data) == 0:
                 return True, "预期JSON 等于 实际JSON【✔】"
+            return False, data
+        if assert_type == "json_match":
+            data = JsonCompare().compare(exp, act, True)
+            if len(data) == 0:
+                return True, "预期JSON 匹配 实际JSON【✔】"
             return False, data
         if assert_type == "text_in":
             if isinstance(act, str):

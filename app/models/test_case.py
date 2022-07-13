@@ -8,7 +8,7 @@ from app.models.out_parameters import PityTestCaseOutParameters
 
 class TestCase(PityBase):
     __tablename__ = "pity_testcase"
-    name = Column(String(32), index=True)
+    name = Column(String(255), index=True)
     request_type = Column(INT, default=1, comment="请求类型 1: http 2: grpc 3: dubbo")
     url = Column(TEXT, nullable=False, comment="请求url")
     request_method = Column(String(12), nullable=True, comment="请求方式, 如果非http可为空")
