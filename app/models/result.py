@@ -20,7 +20,7 @@ class PityTestResult(Base):
     case_id = Column(INT, index=True)
 
     # case_name
-    case_name = Column(String(32))
+    case_name = Column(String(255))
 
     status = Column(SMALLINT, comment="对应状态 0: 成功 1: 失败 2: 出错 3: 跳过")
 
