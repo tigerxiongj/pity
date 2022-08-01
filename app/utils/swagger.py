@@ -6,7 +6,8 @@ from urllib.parse import urlencode, urlparse, parse_qs
 
 class Swagger(object):
     PARAM_TYPES = set(['integer', 'string', 'boolean'])
-    PARAM_DEFAULT = {'integer': 1, 'string': '', 'boolean': 'true'}
+    PARAM_TYPE_DEFAULT = {'integer': 1, 'string': '', 'boolean': 'true'}
+    PARAM_IN_PATH_DEFAULT = {'name': 'host'}
     PARAM_IN_ALL = set(['query', 'path', 'body'])
     PARAM_IN_URL = set(['query', 'path'])
 
@@ -43,7 +44,12 @@ class Swagger(object):
             if p_type not in self.PARAM_TYPES:
                 print('not supported type {0}'.format(p_type))
                 continue 
-            paramters[p_name] = self.PARAM_DEFAULT[p_type]
+            paramters[p_name] = self.PARAM_TYPE_DEFAULT[p_type]
+
+            #将路径参数中的名称替换
+            if p_in == 'path' and p_name in self.PARAM_IN_PATH_DEFAULT:
+                paramters[p_name] = self.PARAM_IN_PATH_DEFAULT[p_name]
+
         return (paramters, body)
 
     def get_api_data(self, oper, sign):
