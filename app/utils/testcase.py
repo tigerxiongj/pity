@@ -1,5 +1,9 @@
-from app.utils.swagger import Swagger
+import imp
 
+
+import json
+
+from app.utils.swagger import Swagger
 from app.schema.testcase_schema import TestCaseAssertsForm, PityTestCaseOutParametersForm, TestCaseForm, TestCaseInfo
 
 def build_test_case_from_swagger(json_string):
@@ -36,7 +40,7 @@ def build_test_case_from_swagger(json_string):
         simple_resp = v['detail']['simple_resp']
         if body:
             tmp_test_case_dict['body_type'] = 1 #写死json
-            tmp_test_case_dict['body'] = body
+            tmp_test_case_dict['body'] = json.dumps(body)
         test_case_form = TestCaseForm(**tmp_test_case_dict)
 
         #构造断言
