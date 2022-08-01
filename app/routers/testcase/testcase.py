@@ -26,6 +26,7 @@ from app.schema.testcase_data import PityTestcaseDataForm
 from app.schema.testcase_directory import PityTestcaseDirectoryForm, PityMoveTestCaseDto
 from app.schema.testcase_out_parameters import PityTestCaseOutParametersForm
 from app.schema.testcase_schema import TestCaseAssertsForm, TestCaseForm, TestCaseInfo, TestCaseGeneratorForm
+from app.utils.testcase import build_test_case_from_swagger
 
 router = APIRouter(prefix="/testcase")
 Author = TypeVar("Author", int, str)
@@ -57,6 +58,16 @@ async def create_testcase(data: TestCaseInfo, user_info=Depends(Permission()), s
         await TestCaseDao.insert_test_case(session, data, user_info['id'])
     return PityResponse.success()
 
+@router.post("/upload_swagger", summary="从swagger导入接口")
+async def create_testcase(file: UploadFile, directory_id: int=0, user_info=Depends(Permission()), session=Depends(get_session)):
+    json_string = await file.read()
+    test_case_info_list = build_test_case_from_swagger(json_string)
+    if not test_case_info_list:
+        return PityResponse.failed("没有解析到用例数据")
+    async with session.begin():
+        for data in test_case_info_list:
+            await TestCaseDao.insert_test_case(session, data, user_info['id'])
+    return PityResponse.success()
 
 @router.post("/update")
 async def update_testcase(form: TestCaseForm, user_info=Depends(Permission())):

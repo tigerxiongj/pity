@@ -34,3 +34,4 @@ py-mock
 starlette_context
 gunicorn
 supervisor
+swagger-parser
