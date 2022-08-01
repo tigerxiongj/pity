@@ -40,7 +40,7 @@ def build_test_case_from_swagger(json_string, directory_id):
         simple_resp = v['detail']['simple_resp']
         if body:
             tmp_test_case_dict['body_type'] = 1 #写死json
-            tmp_test_case_dict['body'] = json.dumps(body)
+            tmp_test_case_dict['body'] = json.dumps(body, indent=4)
         test_case_form = TestCaseForm(**tmp_test_case_dict)
 
         #构造断言

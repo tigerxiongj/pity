@@ -7,7 +7,7 @@ from urllib.parse import urlencode, urlparse, parse_qs
 class Swagger(object):
     PARAM_TYPES = set(['integer', 'string', 'boolean'])
     PARAM_TYPE_DEFAULT = {'integer': 1, 'string': '', 'boolean': 'true'}
-    PARAM_IN_PATH_DEFAULT = {'name': 'host'}
+    PARAM_IN_PATH_DEFAULT = {}
     PARAM_IN_ALL = set(['query', 'path', 'body'])
     PARAM_IN_URL = set(['query', 'path'])
 
