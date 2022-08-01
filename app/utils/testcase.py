@@ -6,7 +6,7 @@ import json
 from app.utils.swagger import Swagger
 from app.schema.testcase_schema import TestCaseAssertsForm, PityTestCaseOutParametersForm, TestCaseForm, TestCaseInfo
 
-def build_test_case_from_swagger(json_string):
+def build_test_case_from_swagger(json_string, directory_id):
     sw_parser = Swagger(json_string)
     api_data = sw_parser.parse()
     if not api_data:
@@ -25,7 +25,7 @@ def build_test_case_from_swagger(json_string):
         'request_headers': '{"Cookie": "token=${CC_TOKEN}"}',
         'request_method': '', #大写的请求方法
         'status': 3,
-        'directory_id': 8,
+        'directory_id': directory_id,
         'request_type': 1,
     }
 

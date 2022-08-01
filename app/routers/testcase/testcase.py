@@ -59,9 +59,9 @@ async def create_testcase(data: TestCaseInfo, user_info=Depends(Permission()), s
     return PityResponse.success()
 
 @router.post("/upload_swagger", summary="从swagger导入接口")
-async def create_testcase(file: UploadFile, directory_id: int=0, user_info=Depends(Permission()), session=Depends(get_session)):
+async def create_testcase(file: UploadFile, directory_id: int, user_info=Depends(Permission()), session=Depends(get_session)):
     json_string = await file.read()
-    test_case_info_list = build_test_case_from_swagger(json_string)
+    test_case_info_list = build_test_case_from_swagger(json_string, directory_id)
     if not test_case_info_list:
         return PityResponse.failed("没有解析到用例数据")
     async with session.begin():
