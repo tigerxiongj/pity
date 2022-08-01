@@ -6,6 +6,8 @@ from collections import defaultdict
 from datetime import datetime
 from typing import List, Any
 
+from urllib.parse import parse_qs, urlparse
+
 from app.core.constructor.case_constructor import TestcaseConstructor
 from app.core.constructor.http_constructor import HttpConstructor
 from app.core.constructor.python_constructor import PythonConstructor
@@ -257,6 +259,20 @@ class Executor(object):
             if "Content-Type" not in headers:
                 headers['Content-Type'] = "application/json; charset=UTF-8"
 
+    def _parse_url(self, url):
+        '''
+        将url中的path variable替换成param中的值
+        '''
+        parts  = urlparse(url)
+        q = parse_qs(parts.query)
+        if q:
+            new_path = parts.path.format(**{k: ','.join(v) for k,v in q.items()})
+            parts = parts._replace(path=new_path)
+        return parts.geturl()
+
+    def replace_url(self, case_info):
+        case_info.url = self._parse_url(case_info.url)
+
     @case_log
     def extract_out_parameters(self, response_info, data: List[PityTestCaseOutParameters]):
         """提取出参数据"""
@@ -289,6 +305,9 @@ class Executor(object):
             response_info["case_name"] = case_info.name
             method = case_info.request_method.upper()
             response_info["request_method"] = method
+
+            #替换url中的path variable
+            self.replace_url(case_info)
 
             # Step1: 替换全局变量
             await self.parse_gconfig(case_info, GconfigType.case, env, *Executor.fields)
