@@ -42,7 +42,7 @@ class TestCaseDao(Mapper):
                 if create_user:
                     filters.append(TestCase.create_user == create_user)
             async with async_session() as session:
-                sql = select(TestCase).where(*filters).order_by(TestCase.name.asc())
+                sql = select(TestCase).where(*filters).order_by(asc('id'))
                 result = await session.execute(sql)
                 return result.scalars().all()
         except Exception as e:
